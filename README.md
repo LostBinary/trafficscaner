@@ -1,5 +1,5 @@
 # trafficscaner
-Es un sniffer/servicio 24/7 que automatiza el monitoreo del tráfico de una interfaz
+Es un sniffer/servicio 24/7 que automatiza el monitoreo del tráfico de una interfaz, he añadido un script "check", para revisar el estado del servicio.
 
 El ciclo del servicio es:
 
@@ -15,6 +15,7 @@ El ciclo del servicio es:
 
 
 · Requisitos:
+  - Windows 10/11
   - Wireshark (dumpcap y tshark)
   - NSSM
     
