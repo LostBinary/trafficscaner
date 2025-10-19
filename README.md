@@ -4,14 +4,20 @@ Es un sniffer/servicio 24/7 que automatiza el monitoreo del tráfico de una inte
 El ciclo del servicio es:
 
 🟢 Ejecuta dumpcap durante 2 h
+
 🧠 Procesa el .pcapng con tshark → crea el .csv en "C:\Caps"
+
 🧹 Limpia archivos >3 días
+
 😴 Hace un Start-Sleep de 7200 s (2 h)
+
 🔁 Repite desde el paso 1
+
 
 · Requisitos:
   - Wireshark (dumpcap y tshark)
   - NSSM
+    
 
 · Instalación:
    Ejecuta PowerShell como Administrador y escribe:
