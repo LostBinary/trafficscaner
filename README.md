@@ -1,6 +1,8 @@
 # trafficscaner
 Es un sniffer/servicio 24/7 que automatiza el monitoreo del tráfico de una interfaz, he añadido un script "check", para revisar el estado del servicio.
 
+//*En desarrollo*//
+
 El ciclo del servicio es:
 
 🟢 Ejecuta dumpcap durante 2 h
