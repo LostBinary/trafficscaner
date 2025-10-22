@@ -3,6 +3,8 @@ Es un sniffer/servicio 24/7 que automatiza el monitoreo del tráfico de una inte
 
 //*En desarrollo*//
 
+*Es una idea con aún problemas que corregir al convertirlo en servicio, acepto ideas, soluciones...*
+
 El ciclo del servicio es:
 
 🟢 Ejecuta dumpcap durante 2 h
