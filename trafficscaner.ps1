@@ -66,7 +66,7 @@ while ($true) {
     # --- Analizar con tshark ---
     & $TsharkPath -r $PcapFile -Y "dns or http" -T fields `
         -e frame.time -e ip.src -e ip.dst -e _ws.col.Protocol -e dns.qry.name -e http.host `
-        -E header=y -E separator=, | Out-File -Encoding utf8 -FilePath $CsvFile
+        -E header=y -E separator=',' | Out-File -Encoding utf8 -FilePath $CsvFile
 
     Write-Host ">>> [$timestamp] Análisis guardado en $CsvFile"
 
@@ -80,3 +80,4 @@ while ($true) {
 
     Start-Sleep -Seconds 7200
 }
+
