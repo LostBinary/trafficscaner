@@ -9,7 +9,7 @@ $DumpcapPath = "C:\Program Files\Wireshark\dumpcap.exe"
 $TsharkPath  = "C:\Program Files\Wireshark\tshark.exe"
 $CaptureDir  = "C:\Caps"
 $Iface       = 4          # Número de interfaz (ver con 'dumpcap -D')
-$Duration    = 7200       # 2 horas (en segundos)
+$Duration    = 7200       #  (en segundos)
 $FileSizeKB  = 102400     # 100 MB por archivo
 $MaxFiles    = 10         # Número máximo de archivos rotativos
 $LogDays     = 3          # Borrar archivos más antiguos de 3 días
@@ -80,4 +80,3 @@ while ($true) {
 
     Start-Sleep -Seconds 7200
 }
-

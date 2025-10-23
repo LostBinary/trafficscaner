@@ -1,11 +1,12 @@
 # ================================================================
 # check-trafficscaner.ps1
-# Descripción: Comprueba el estado del servicio trafficscaner,
+# Descripción: Comprueba el estado del servicio trafficscanery trafficpcap,
 # Muestra proceso activo, tiempo en ejecución y últimos ficheros generados
 # ================================================================
 ============
 
-$ServiceName = "trafficscaner"
+$ServiceName1 = "trafficscaner"
+$ServiceName2 = "trafficpcap"
 $CaptureDir  = "C:\Caps"
 
 Write-Host "Comprobando servicio $ServiceName ..."
