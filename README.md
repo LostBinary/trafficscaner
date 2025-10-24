@@ -51,3 +51,5 @@ El ciclo del servicio es:
 # trafficpcap_analizer
 Analiza los historiales y crea un archivo con un resumen de posibles detecciones sospechosas; "1" normal  "-1" sospechoso.
 
+Estoy integrando esta función con una IA que aprende de tu propia red y detecta tráfico irregular.
+
