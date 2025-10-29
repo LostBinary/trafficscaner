@@ -8,8 +8,58 @@
 $DumpcapPath = "C:\Program Files\Wireshark\dumpcap.exe"
 $TsharkPath  = "C:\Program Files\Wireshark\tshark.exe"
 $CaptureDir  = "C:\Caps"
-$Iface       = 4          # Número de interfaz (ver con 'dumpcap -D')
-$Duration    = 7200       #  (en segundos)
+# Detectar/interfaz: permite override manual (definir $Iface), override por entorno (TRAFFIC_IFACE_INDEX),
+# o detección por patrón ($IfacePattern). No pide input interactivo (útil para servicio).
+$EnvIface = $null
+if ($env:TRAFFIC_IFACE_INDEX) {
+    try {
+        $EnvIface = [int]$env:TRAFFIC_IFACE_INDEX
+    } catch {
+        Write-Host "Aviso: la variable de entorno TRAFFIC_IFACE_INDEX no es un entero válido: $($env:TRAFFIC_IFACE_INDEX)"
+        $Iface = $null
+    }
+}
+
+# Opciones de configuración: si quieres forzar una interfaz, asigna $Iface arriba manualmente.
+# Patrón por defecto para buscar adaptador (coincide con Name o InterfaceDescription)
+$IfacePattern = "(Wi-Fi)"
+
+# Si ya se definió $Iface explícitamente en la configuración, lo respetamos.
+if (-not ($PSBoundParameters.ContainsKey('Iface')) -and (-not (Get-Variable -Name Iface -Scope Script -ErrorAction SilentlyContinue))) {
+    # No hay override manual en configuración: intentar variable de entorno primero
+    if ($EnvIface) {
+        $Iface = $EnvIface
+        Write-Host "Usando índice de interfaz desde variable de entorno: $Iface"
+    } else {
+        # Intentar buscar adaptador por patrón en Name o InterfaceDescription
+        $Adapter = Get-NetAdapter -ErrorAction SilentlyContinue |
+            Where-Object { $_.InterfaceDescription -like "*$IfacePattern*" -or $_.Name -like "*$IfacePattern*" } |
+            Select-Object -First 1
+
+        if ($null -ne $Adapter) {
+            $Iface = $Adapter.InterfaceIndex
+            Write-Host "Seleccionada interfaz '$($Adapter.Name)' (Index $Iface) por patrón '$IfacePattern'."
+        } else {
+            # Si no hubo coincidencias, intentar elegir la primera interfaz 'Up', si ninguna tomar 1
+            $UpAdapter = Get-NetAdapter -ErrorAction SilentlyContinue | Where-Object { $_.Status -eq 'Up' } | Select-Object -First 1
+            if ($null -ne $UpAdapter) {
+                $Iface = $UpAdapter.InterfaceIndex
+                Write-Host "No se encontró adaptador por patrón '$IfacePattern'. Usando primera interfaz 'Up': '$($UpAdapter.Name)' (Index $Iface)."
+            } else {
+                $Iface = $IfacePattern
+                Write-Host "No se encontraron interfaces activas. Se usará índice por defecto: $Iface. Recomendado configurar manualmente la variable `\$Iface` o TRAFFIC_IFACE_INDEX."
+            }
+        }
+    }
+} else {
+    # Si $Iface ya estaba definido, mostrarlo
+    if (-not $EnvIface) { Write-Host "Usando valor de configuración manual de `\$Iface`: $Iface" }
+}
+
+# Número de interfaz (ver con 'dumpcap -D' si es necesario)
+# $Iface ya contiene un entero válido en este punto
+$Duration    = 60       #  (en segundos)
+$Durmiente = 60       #  (en segundos)
 $FileSizeKB  = 102400     # 100 MB por archivo
 $MaxFiles    = 10         # Número máximo de archivos rotativos
 $LogDays     = 3          # Borrar archivos más antiguos de 3 días
@@ -49,7 +99,7 @@ if (-not (Test-Path $CaptureDir)) {
 # --- Bucle infinito ---
 while ($true) {
 
-    $timestamp = (Get-Date).ToString("yyyyMMdd_HHmmss")
+    $timestamp = (Get-Date).ToString("ddMMyyyy_HHmmss")
     $PcapFile  = Join-Path $CaptureDir "capture_$timestamp.pcapng"
     $CsvFile   = Join-Path $CaptureDir "report_$timestamp.csv"
 
@@ -75,8 +125,8 @@ while ($true) {
         Where-Object { $_.LastWriteTime -lt (Get-Date).AddDays(-$LogDays) } |
         Remove-Item -Force
 
-    Write-Host ">>> [$timestamp] Limpieza completada. Esperando 2 horas..."
+    Write-Host ">>> [$timestamp] Análisis completado. En reposo "$Durmiente" segs."
     Write-Host "----------------------------------------------------"
 
-    Start-Sleep -Seconds 7200
+    Start-Sleep -Seconds $Durmiente
 }
